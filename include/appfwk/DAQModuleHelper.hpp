@@ -11,6 +11,9 @@
 
 #include "appfwk/app/Structs.hpp"
 
+#include "oksdbinterfaces/Configuration.hpp"
+#include "coredal/DaqModule.hpp"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -26,6 +29,10 @@ using NameUidMap_t = std::map<std::string, std::string>;
 /// The iniobj is as given to a module's init() method.
 NameUidMap_t
 connection_index(const nlohmann::json& iniobj, std::vector<std::string> required = {});
+/// DAL version of the above
+NameUidMap_t
+connection_index(const dunedaq::coredal::DaqModule* conf, std::vector<std::string> required = {});
+
 
 /// @brief Return vector of QueueInfo from the init() object
 app::ConnectionReferences_t
@@ -33,6 +40,9 @@ connection_refs(const nlohmann::json& iniobj);
 
 std::string
 connection_uid(const nlohmann::json& iniobj, const std::string& name);
+
+std::string
+connection_uid(const dunedaq::coredal::DaqModule* conf, const std::string& name);
 
 } // namespace appfwk
 

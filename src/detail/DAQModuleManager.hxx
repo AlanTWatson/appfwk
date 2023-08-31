@@ -24,6 +24,8 @@
 #include "coredal/NetworkConnection.hpp"
 #include "coredal/Queue.hpp"
 
+#include "coredal/ConnectionReference.hpp"
+
 #include <map>
 #include <regex>
 #include <string>
@@ -76,6 +78,11 @@ DAQModuleManager::initialize(std::string& sessionName, oksdbinterfaces::Configur
     if (!res->disabled(*session)) {
       auto mod = res->cast<dunedaq::coredal::DaqModule>();
       if (mod) {
+        TLOG() << "Conn_refs for  " << mod->UID();
+        auto crs = mod->get_conn_refs();
+        for (auto cr: crs) {
+           TLOG() << "Found conn_ref " << cr->UID();
+        }
         TLOG() << "initialising module " << mod->UID();
         auto connections = mod->get_inputs();
         auto outputs = mod->get_outputs();

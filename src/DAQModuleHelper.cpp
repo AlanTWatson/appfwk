@@ -10,6 +10,8 @@
 #include "appfwk/Issues.hpp"
 #include "appfwk/app/Nljs.hpp"
 
+#include "coredal/ConnectionReference.hpp"
+
 #include <string>
 #include <vector>
 
@@ -30,6 +32,24 @@ connection_index(const nlohmann::json& iniobj, std::vector<std::string> required
   return ret;
 }
 
+
+NameUidMap_t
+connection_index(const dunedaq::coredal::DaqModule* conf, std::vector<std::string> required)
+{
+ // I think the connection reference list should be all we need here
+  NameUidMap_t ret;
+  for (const auto cr: conf->get_conn_refs()) {
+     ret[cr->get_cr_name()] = cr->get_uid();
+  }
+  
+  for (auto name : required) {
+    if (ret.find(name) == ret.end()) {
+      throw InvalidSchema(ERS_HERE, "missing connection: " + name);
+    }
+  }
+  return ret;
+}
+
 app::ConnectionReferences_t
 connection_refs(const nlohmann::json& iniobj)
 {
@@ -40,6 +60,13 @@ std::string
 connection_uid(const nlohmann::json& iniobj, const std::string& name)
 {
   return connection_index(iniobj, { name })[name];
+}
+
+
+std::string
+connection_uid(const dunedaq::coredal::DaqModule* conf, const std::string& name)
+{
+  return connection_index(conf, { name })[name];
 }
 
 } // namespace dunedaq::appfwk
